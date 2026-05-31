@@ -1,0 +1,13 @@
+{
+  "name": "yume-platform",
+  "version": "1.0.0",
+  "description": "Yume - Win Real Cash Gaming Platform",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve .",
+    "dev": "serve ."
+  },
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
+}
