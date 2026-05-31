@@ -424,6 +424,15 @@
             max-width: 350px;
         }
 
+        .matchmaking-card h2 {
+            margin-bottom: 16px;
+        }
+
+        .entry-fee {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
         .searching-animation {
             position: relative;
             width: 100px;
@@ -446,6 +455,12 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 40px;
+        }
+
+        .estimated-time {
+            margin: 20px 0;
+            font-size: 14px;
+            opacity: 0.8;
         }
 
         .cancel-btn {
@@ -472,6 +487,12 @@
             z-index: 7000;
         }
 
+        .starting-card {
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
         .vs-display {
             display: flex;
             justify-content: space-between;
@@ -495,6 +516,11 @@
             margin-bottom: 12px;
         }
 
+        .vs-text {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
         .countdown {
             font-size: 28px;
             font-weight: 700;
@@ -505,6 +531,22 @@
             font-size: 48px;
             display: inline-block;
             animation: bounce 0.5s;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            animation: loading 3s linear forwards;
         }
 
         /* GAMEPLAY */
@@ -549,6 +591,14 @@
             font-family: monospace;
         }
 
+        .game-arena {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
         .game-controls {
             padding: 40px;
             text-align: center;
@@ -563,10 +613,18 @@
             font-weight: 700;
             color: #fff;
             cursor: pointer;
+            transition: transform 0.1s;
         }
 
         .tap-btn:active {
             transform: scale(0.96);
+        }
+
+        .game-instructions {
+            text-align: center;
+            padding: 20px;
+            opacity: 0.7;
+            font-size: 14px;
         }
 
         /* GAME RESULT */
@@ -592,20 +650,41 @@
             max-width: 400px;
         }
 
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .result-header span {
+            font-size: 60px;
+            display: block;
+        }
+
         .final-scores {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 30px 0;
+            margin-bottom: 30px;
             padding: 20px;
             background: rgba(0,0,0,0.3);
             border-radius: 20px;
+        }
+
+        .final-player, .final-opponent {
+            text-align: center;
         }
 
         .final-score {
             font-size: 32px;
             font-weight: 700;
             display: block;
+        }
+
+        .final-vs {
+            font-size: 18px;
+            font-weight: 700;
         }
 
         .reward-details {
@@ -622,6 +701,7 @@
         .reward-row.highlight {
             color: #fbbf24;
             font-weight: 700;
+            font-size: 18px;
         }
 
         .result-buttons {
@@ -634,6 +714,7 @@
             padding: 14px;
             border: none;
             border-radius: 30px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
         }
@@ -649,7 +730,7 @@
         }
 
         /* TOURNAMENT */
-        .tournament-container, .wallet-container, .profile-container {
+        .tournament-container {
             min-height: 100vh;
             padding: 20px;
             padding-bottom: 80px;
@@ -662,6 +743,15 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
+        }
+
+        .create-tournament-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
         }
 
         .tournament-list {
@@ -679,6 +769,11 @@
             align-items: center;
             gap: 16px;
             cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .tournament-card:active {
+            transform: scale(0.98);
         }
 
         .tournament-icon {
@@ -689,19 +784,58 @@
             flex: 1;
         }
 
+        .tournament-info h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .tournament-info p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .tournament-time {
+            font-size: 11px;
+            color: #fbbf24;
+            margin-top: 4px;
+        }
+
+        .tournament-players {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
         /* WALLET */
+        .wallet-container {
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 80px;
+            display: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .wallet-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
         .total-balance {
             background: rgba(255,255,255,0.15);
             padding: 20px;
             border-radius: 20px;
+            margin-top: 16px;
             text-align: center;
-            margin-bottom: 24px;
+        }
+
+        .total-balance span:first-child {
+            font-size: 14px;
+            opacity: 0.8;
+            display: block;
         }
 
         .total-balance span:last-child {
             font-size: 36px;
             font-weight: 700;
-            display: block;
         }
 
         .wallet-actions {
@@ -715,8 +849,14 @@
             padding: 14px;
             border: none;
             border-radius: 30px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .deposit-btn:active, .withdraw-btn:active {
+            transform: scale(0.96);
         }
 
         .deposit-btn {
@@ -736,6 +876,15 @@
             margin-bottom: 24px;
         }
 
+        .transaction-history h3 {
+            margin-bottom: 16px;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
         .history-item {
             display: flex;
             justify-content: space-between;
@@ -743,10 +892,41 @@
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .history-amount.positive { color: #4ade80; }
-        .history-amount.negative { color: #f87171; }
+        .history-amount.positive {
+            color: #4ade80;
+        }
+
+        .history-amount.negative {
+            color: #f87171;
+        }
+
+        .refer-section {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .refer-btn {
+            background: #fbbf24;
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            margin-top: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
 
         /* PROFILE */
+        .profile-container {
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 80px;
+            display: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
         .profile-header {
             text-align: center;
             margin-bottom: 32px;
@@ -762,6 +942,27 @@
             justify-content: center;
             font-size: 50px;
             margin: 0 auto 16px;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .level-progress {
+            margin-top: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.3s;
         }
 
         .profile-stats {
@@ -797,9 +998,16 @@
             align-items: center;
             gap: 12px;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .menu-item.logout { color: #f87171; }
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .menu-item.logout {
+            color: #f87171;
+        }
 
         /* MODAL */
         .modal {
@@ -830,6 +1038,33 @@
             right: 20px;
             font-size: 28px;
             cursor: pointer;
+            color: #fff;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 24px;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .modal-content input::placeholder {
+            color: rgba(255,255,255,0.5);
         }
 
         .withdraw-confirm-btn {
@@ -839,24 +1074,75 @@
             border: none;
             border-radius: 30px;
             color: #fff;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
         }
 
         /* ANIMATIONS */
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @keyframes pulse {
-            0% { transform: scale(0.8); opacity: 1; }
-            100% { transform: scale(1.5); opacity: 0; }
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
         }
+
         @keyframes bounce {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.2); }
+        }
+
+        @keyframes loading {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .game-mode-grid {
+                gap: 12px;
+            }
+            
+            .game-mode-card {
+                padding: 16px;
+            }
+            
+            .mode-icon {
+                font-size: 36px;
+            }
+            
+            .stat-value {
+                font-size: 18px;
+            }
+            
+            .tap-btn {
+                padding: 16px 40px;
+                font-size: 20px;
+            }
         }
     </style>
 </head>
@@ -902,38 +1188,95 @@
             <div class="auth-logo">YUME</div>
             <h2>Welcome Back!</h2>
             <p>Login to continue and compete</p>
+            
             <form id="authForm">
                 <input type="email" id="email" placeholder="Email address" required>
                 <input type="password" id="password" placeholder="Password" required>
                 <button type="submit" class="auth-btn" id="authSubmitBtn">LOGIN</button>
             </form>
-            <button class="google-btn" onclick="signInWithGoogle()"> G Continue with Google</button>
-            <p class="auth-switch">Don't have an account? <a href="#" onclick="switchAuthMode()">Sign Up</a></p>
+            
+            <button class="google-btn" onclick="signInWithGoogle()">
+                <span>G</span> Continue with Google
+            </button>
+            
+            <p class="auth-switch">
+                Don't have an account? <a href="#" onclick="switchAuthMode()">Sign Up</a>
+            </p>
         </div>
     </div>
 
     <!-- HOME/LOBBY -->
     <div id="homeContainer" class="home-container">
         <div class="status-bar">
-            <div class="wallet-info"><span class="wallet-label">Wallet Balance</span><span class="wallet-amount" id="walletBalance">₦0.00</span></div>
-            <div class="level-info"><span class="level-label">Level</span><span class="level-number" id="userLevel">1</span></div>
+            <div class="wallet-info">
+                <span class="wallet-label">Wallet Balance</span>
+                <span class="wallet-amount" id="walletBalance">₦0.00</span>
+            </div>
+            <div class="level-info">
+                <span class="level-label">Level</span>
+                <span class="level-number" id="userLevel">1</span>
+            </div>
         </div>
+
         <div class="stats-row">
-            <div class="stat-card"><span class="stat-value" id="winRate">0%</span><span class="stat-label">WIN RATE</span></div>
-            <div class="stat-card"><span class="stat-value" id="matchesPlayed">0</span><span class="stat-label">MATCHES</span></div>
-            <div class="stat-card"><span class="stat-value" id="totalWinnings">₦0</span><span class="stat-label">WON</span></div>
+            <div class="stat-card">
+                <span class="stat-value" id="winRate">0%</span>
+                <span class="stat-label">WIN RATE</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value" id="matchesPlayed">0</span>
+                <span class="stat-label">MATCHES</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value" id="totalWinnings">₦0</span>
+                <span class="stat-label">WON</span>
+            </div>
         </div>
+
         <div class="game-mode-grid">
-            <div class="game-mode-card" onclick="selectGameMode('1v1')"><div class="mode-icon">⚔️</div><h3>1V1 BATTLE</h3><p>Win real cash</p><span class="entry-badge">Entry: ₦200</span></div>
-            <div class="game-mode-card" onclick="selectGameMode('tournament')"><div class="mode-icon">🏆</div><h3>TOURNAMENT</h3><p>Compete & win big</p><span class="entry-badge">Entry: ₦1,000</span></div>
-            <div class="game-mode-card" onclick="selectGameMode('practice')"><div class="mode-icon">🎯</div><h3>PRACTICE</h3><p>Play & improve</p><span class="entry-badge">Free</span></div>
-            <div class="game-mode-card" onclick="selectGameMode('friend')"><div class="mode-icon">👥</div><h3>FRIEND MATCH</h3><p>Challenge friends</p><span class="entry-badge">Custom</span></div>
+            <div class="game-mode-card" onclick="selectGameMode('1v1')">
+                <div class="mode-icon">⚔️</div>
+                <h3>1V1 BATTLE</h3>
+                <p>Win real cash</p>
+                <span class="entry-badge">Entry: ₦200</span>
+            </div>
+            <div class="game-mode-card" onclick="selectGameMode('tournament')">
+                <div class="mode-icon">🏆</div>
+                <h3>TOURNAMENT</h3>
+                <p>Compete & win big</p>
+                <span class="entry-badge">Entry: ₦1,000</span>
+            </div>
+            <div class="game-mode-card" onclick="selectGameMode('practice')">
+                <div class="mode-icon">🎯</div>
+                <h3>PRACTICE</h3>
+                <p>Play & improve</p>
+                <span class="entry-badge">Free</span>
+            </div>
+            <div class="game-mode-card" onclick="selectGameMode('friend')">
+                <div class="mode-icon">👥</div>
+                <h3>FRIEND MATCH</h3>
+                <p>Challenge friends</p>
+                <span class="entry-badge">Custom</span>
+            </div>
         </div>
+
         <nav class="bottom-nav">
-            <div class="nav-item active" onclick="showSection('home', this)"><span class="nav-icon">🏠</span><span>Home</span></div>
-            <div class="nav-item" onclick="showSection('tournaments', this)"><span class="nav-icon">🏆</span><span>Tournaments</span></div>
-            <div class="nav-item" onclick="showSection('wallet', this)"><span class="nav-icon">👛</span><span>Wallet</span></div>
-            <div class="nav-item" onclick="showSection('profile', this)"><span class="nav-icon">👤</span><span>Profile</span></div>
+            <div class="nav-item active" onclick="showSection('home', this)">
+                <span class="nav-icon">🏠</span>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" onclick="showSection('tournaments', this)">
+                <span class="nav-icon">🏆</span>
+                <span>Tournaments</span>
+            </div>
+            <div class="nav-item" onclick="showSection('wallet', this)">
+                <span class="nav-icon">👛</span>
+                <span>Wallet</span>
+            </div>
+            <div class="nav-item" onclick="showSection('profile', this)">
+                <span class="nav-icon">👤</span>
+                <span>Profile</span>
+            </div>
         </nav>
     </div>
 
@@ -942,7 +1285,10 @@
         <div class="matchmaking-card">
             <h2>1V1 BATTLE</h2>
             <div class="entry-fee">Entry Fee: ₦<span id="entryFee">200</span></div>
-            <div class="searching-animation"><div class="pulse-ring"></div><div class="search-icon">🔍</div></div>
+            <div class="searching-animation">
+                <div class="pulse-ring"></div>
+                <div class="search-icon">🔍</div>
+            </div>
             <p>Searching for skilled player...</p>
             <div class="estimated-time">Estimated time: <span id="estTime">10</span>s</div>
             <button class="cancel-btn" onclick="cancelMatchmaking()">CANCEL</button>
@@ -954,11 +1300,20 @@
         <div class="starting-card">
             <h2>GAME STARTING</h2>
             <div class="vs-display">
-                <div class="player-card"><div class="player-avatar" id="player1Avatar">👤</div><div class="player-name">You</div></div>
+                <div class="player-card">
+                    <div class="player-avatar" id="player1Avatar">👤</div>
+                    <div class="player-name">You</div>
+                </div>
                 <div class="vs-text">VS</div>
-                <div class="player-card"><div class="player-avatar" id="player2Avatar">👤</div><div class="player-name" id="player2Name">Opponent</div></div>
+                <div class="player-card">
+                    <div class="player-avatar" id="player2Avatar">👤</div>
+                    <div class="player-name" id="player2Name">Opponent</div>
+                </div>
             </div>
             <div class="countdown">Get Ready! <span id="countdownNum">3</span></div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
             <p>The battle will start soon</p>
         </div>
     </div>
@@ -966,64 +1321,212 @@
     <!-- IN-GAME SCREEN -->
     <div id="gameplayContainer" class="gameplay-container">
         <div class="game-header">
-            <div class="score-display"><div class="player-score" id="playerScore">0</div><div>VS</div><div class="opponent-score" id="opponentScore">0</div></div>
+            <div class="score-display">
+                <div class="player-score" id="playerScore">0</div>
+                <div class="vs-divider">VS</div>
+                <div class="opponent-score" id="opponentScore">0</div>
+            </div>
             <div class="timer" id="gameTimer">00:00</div>
         </div>
-        <div class="game-controls"><button class="tap-btn" id="tapButton" onclick="handleTap()">TAP FAST!</button></div>
+        
+        <div class="game-arena" id="gameArena">
+        </div>
+        
+        <div class="game-controls">
+            <button class="tap-btn" id="tapButton" onclick="handleTap()">TAP FAST!</button>
+        </div>
+        
         <div class="game-instructions">Tap as fast as you can to score!</div>
     </div>
 
     <!-- GAME RESULT -->
     <div id="gameResultContainer" class="game-result-container">
         <div class="result-card">
-            <div class="result-header" id="resultHeader"><span id="resultIcon">🏆</span><h2 id="resultText">YOU WIN!</h2></div>
-            <div class="final-scores"><div class="final-player"><span class="final-name">You</span><span class="final-score" id="finalPlayerScore">680</span></div><div class="final-vs">VS</div><div class="final-opponent"><span class="final-name">Opponent</span><span class="final-score" id="finalOpponentScore">560</span></div></div>
-            <div class="reward-details">
-                <div class="reward-row"><span>Win Amount</span><span id="winAmount">₦200.00</span></div>
-                <div class="reward-row"><span>Platform Fee</span><span id="platformFee">₦20.00</span></div>
+            <div class="result-header" id="resultHeader">
+                <span id="resultIcon">🏆</span>
+                <h2 id="resultText">YOU WIN!</h2>
             </div>
-            <div class="result-buttons"><button class="continue-btn" onclick="continueToLobby()">CONTINUE</button><button class="share-btn" onclick="shareResult()">SHARE</button></div>
+            <div class="final-scores">
+                <div class="final-player">
+                    <span class="final-name">You</span>
+                    <span class="final-score" id="finalPlayerScore">680</span>
+                </div>
+                <div class="final-vs">VS</div>
+                <div class="final-opponent">
+                    <span class="final-name">Opponent</span>
+                    <span class="final-score" id="finalOpponentScore">560</span>
+                </div>
+            </div>
+            <div class="reward-details">
+                <div class="reward-row">
+                    <span>Match Reward</span>
+                    <span id="matchReward">₦4,760.00</span>
+                </div>
+                <div class="reward-row">
+                    <span>Entry Fee</span>
+                    <span id="entryFeeDisplay">₦100.00</span>
+                </div>
+                <div class="reward-row highlight">
+                    <span>Win Amount</span>
+                    <span id="winAmount">₦200.00</span>
+                </div>
+                <div class="reward-row">
+                    <span>Platform Fee</span>
+                    <span id="platformFee">₦20.00</span>
+                </div>
+            </div>
+            <div class="result-buttons">
+                <button class="continue-btn" onclick="continueToLobby()">CONTINUE</button>
+                <button class="share-btn" onclick="shareResult()">SHARE RESULT</button>
+            </div>
         </div>
     </div>
 
     <!-- TOURNAMENT LOBBY -->
     <div id="tournamentContainer" class="tournament-container">
-        <div class="tournament-header"><h2>TOURNAMENTS</h2><button class="create-tournament-btn" onclick="showCreateTournament()">+ CREATE</button></div>
+        <div class="tournament-header">
+            <h2>TOURNAMENTS</h2>
+            <button class="create-tournament-btn" onclick="showCreateTournament()">+ CREATE</button>
+        </div>
+        
         <div class="tournament-list">
-            <div class="tournament-card" onclick="joinTournament('rookie')"><div class="tournament-icon">🏆</div><div class="tournament-info"><h3>Rookie Cup</h3><p>Entry: ₦200</p></div><div class="tournament-players">128 players</div></div>
-            <div class="tournament-card" onclick="joinTournament('pro')"><div class="tournament-icon">⭐</div><div class="tournament-info"><h3>Pro League</h3><p>Entry: ₦1,000</p></div><div class="tournament-players">256 players</div></div>
-            <div class="tournament-card" onclick="joinTournament('supay')"><div class="tournament-icon">👑</div><div class="tournament-info"><h3>Supay Masters</h3><p>Entry: ₦1,500</p></div><div class="tournament-players">512 players</div></div>
+            <div class="tournament-card" onclick="joinTournament('rookie')">
+                <div class="tournament-icon">🏆</div>
+                <div class="tournament-info">
+                    <h3>Rookie Cup</h3>
+                    <p>Entry: ₦200</p>
+                    <div class="tournament-time">⏰ 20h 45m left</div>
+                </div>
+                <div class="tournament-players">128 players</div>
+            </div>
+            <div class="tournament-card" onclick="joinTournament('pro')">
+                <div class="tournament-icon">⭐</div>
+                <div class="tournament-info">
+                    <h3>Pro League</h3>
+                    <p>Entry: ₦1,000</p>
+                    <div class="tournament-time">⏰ 05h 30m left</div>
+                </div>
+                <div class="tournament-players">256 players</div>
+            </div>
+            <div class="tournament-card" onclick="joinTournament('supay')">
+                <div class="tournament-icon">👑</div>
+                <div class="tournament-info">
+                    <h3>Supay Masters</h3>
+                    <p>Entry: ₦1,500</p>
+                    <div class="tournament-time">⏰ 12h 00m left</div>
+                </div>
+                <div class="tournament-players">512 players</div>
+            </div>
         </div>
     </div>
 
     <!-- WALLET -->
     <div id="walletContainer" class="wallet-container">
-        <h2 style="text-align:center">MY WALLET</h2>
-        <div class="total-balance"><span>Total Balance</span><span id="totalBalance">₦0.00</span></div>
-        <div class="wallet-actions"><button class="deposit-btn" onclick="showDeposit()">DEPOSIT</button><button class="withdraw-btn" onclick="showWithdraw()">WITHDRAW</button></div>
-        <div class="transaction-history"><h3>Transaction History</h3><div class="history-list" id="transactionHistory"></div></div>
-        <div class="refer-section"><h3>Refer & Earn</h3><p>Invite friends and earn ₦1,000 each</p><button class="refer-btn" onclick="copyReferralCode()">INVITE NOW</button></div>
+        <div class="wallet-header">
+            <h2>MY WALLET</h2>
+            <div class="total-balance">
+                <span>Total Balance</span>
+                <span id="totalBalance">₦0.00</span>
+            </div>
+        </div>
+        
+        <div class="wallet-actions">
+            <button class="deposit-btn" onclick="showDeposit()">DEPOSIT</button>
+            <button class="withdraw-btn" onclick="showWithdraw()">WITHDRAW</button>
+        </div>
+        
+        <div class="transaction-history">
+            <h3>Transaction History</h3>
+            <div class="history-list" id="transactionHistory">
+                <!-- Transactions loaded dynamically -->
+            </div>
+        </div>
+        
+        <div class="refer-section">
+            <h3>Refer & Earn</h3>
+            <p>Invite friends and earn ₦1,000 each</p>
+            <button class="refer-btn" onclick="copyReferralCode()">INVITE NOW</button>
+        </div>
     </div>
 
     <!-- PROFILE -->
     <div id="profileContainer" class="profile-container">
-        <div class="profile-header"><div class="profile-avatar" id="profileAvatar">👤</div><h3 id="profileName">Player Name</h3><p id="profileEmail">user@example.com</p></div>
-        <div class="profile-stats"><div class="profile-stat"><span class="stat-number" id="profileWinRate">0%</span><span>Win Rate</span></div><div class="profile-stat"><span class="stat-number" id="profileMatches">0</span><span>Matches</span></div><div class="profile-stat"><span class="stat-number" id="profileWinnings">₦0</span><span>Winnings</span></div></div>
-        <div class="profile-menu"><div class="menu-item" onclick="showCareerResults()"><span>📊</span> Career Results</div><div class="menu-item" onclick="showAchievements()"><span>🏅</span> Achievements</div><div class="menu-item" onclick="showSettings()"><span>⚙️</span> Settings</div><div class="menu-item" onclick="showSupport()"><span>❓</span> Support</div><div class="menu-item logout" onclick="logout()"><span>🚪</span> Log Out</div></div>
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">👤</div>
+            <h3 id="profileName">Player Name</h3>
+            <p class="profile-email" id="profileEmail">user@example.com</p>
+            <div class="level-progress">
+                <span>Level <span id="profileLevel">1</span></span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="levelProgress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-stats">
+            <div class="profile-stat">
+                <span class="stat-number" id="profileWinRate">0%</span>
+                <span>Win Rate</span>
+            </div>
+            <div class="profile-stat">
+                <span class="stat-number" id="profileMatches">0</span>
+                <span>Matches</span>
+            </div>
+            <div class="profile-stat">
+                <span class="stat-number" id="profileWinnings">₦0</span>
+                <span>Winnings</span>
+            </div>
+        </div>
+        
+        <div class="profile-menu">
+            <div class="menu-item" onclick="showCareerResults()">
+                <span>📊</span> Career Results
+            </div>
+            <div class="menu-item" onclick="showAchievements()">
+                <span>🏅</span> Achievements
+            </div>
+            <div class="menu-item" onclick="showSettings()">
+                <span>⚙️</span> Settings
+            </div>
+            <div class="menu-item" onclick="showSupport()">
+                <span>❓</span> Support
+            </div>
+            <div class="menu-item logout" onclick="logout()">
+                <span>🚪</span> Log Out
+            </div>
+        </div>
     </div>
 
     <!-- WITHDRAW MODAL -->
-    <div id="withdrawModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('withdrawModal')">&times;</span><h2>WITHDRAW FUNDS</h2><input type="number" id="withdrawAmount" placeholder="Enter amount"><select id="withdrawMethod"><option value="bank">Bank Transfer</option><option value="palmpay">PalmPay</option><option value="supay">Supay</option></select><button class="withdraw-confirm-btn" onclick="processWithdraw()">WITHDRAW NOW</button></div></div>
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('withdrawModal')">&times;</span>
+            <h2>WITHDRAW FUNDS</h2>
+            <div class="withdraw-amount">
+                <label>Amount (₦)</label>
+                <input type="number" id="withdrawAmount" placeholder="Enter amount">
+            </div>
+            <div class="withdraw-method">
+                <label>Withdrawal Method</label>
+                <select id="withdrawMethod">
+                    <option value="bank">Bank Transfer (1-2 business days)</option>
+                    <option value="palmpay">PalmPay</option>
+                    <option value="supay">Supay</option>
+                </select>
+            </div>
+            <button class="withdraw-confirm-btn" onclick="processWithdraw()">WITHDRAW NOW</button>
+        </div>
+    </div>
 
     <script>
         // ============================================
-        // CONFIGURATION - Loaded from .env
+        // YUME GAMING PLATFORM - MAIN SCRIPT
         // ============================================
-        // These would normally come from environment variables
-        // For this demo, using default values - replace with your .env values
+        
+        // Configuration - Replace with your .env values
         const ENV = {
-            SUPABASE_URL: 'https://your-project.supabase.co',  // Replace with your VITE_SUPABASE_URL
-            SUPABASE_ANON_KEY: 'your-anon-key-here',          // Replace with your VITE_SUPABASE_ANON_KEY
+            SUPABASE_URL: 'https://your-project.supabase.co',
+            SUPABASE_ANON_KEY: 'your-anon-key-here',
             APP_NAME: 'Yume',
             MIN_WITHDRAWAL: 100,
             MAX_WITHDRAWAL: 1000000,
@@ -1046,6 +1549,7 @@
         let opponentScore = 0;
         let timeLeft = 30;
         let gameActive = false;
+        let currentOpponent = "";
 
         // Demo user data
         let userData = {
@@ -1057,11 +1561,13 @@
             display_name: "YumePlayer",
             email: "player@yume.com",
             matches_won: 246,
+            total_xp: 2300,
             transactions: [
-                { type: 'WIN', amount: 400, description: '1v1 Battle' },
-                { type: 'DEPOSIT', amount: 5000, description: 'Bank Transfer' },
-                { type: 'WITHDRAWAL', amount: -2000, description: 'To Bank' },
-                { type: 'WIN', amount: 10000, description: 'Tournament Victory' }
+                { type: 'WIN', amount: 400, description: '1v1 Battle', date: '2024-01-15' },
+                { type: 'DEPOSIT', amount: 5000, description: 'Bank Transfer', date: '2024-01-14' },
+                { type: 'WITHDRAWAL', amount: -2000, description: 'To Bank', date: '2024-01-13' },
+                { type: 'WIN', amount: 10000, description: 'Tournament Victory', date: '2024-01-12' },
+                { type: 'WIN', amount: 200, description: '1v1 Battle', date: '2024-01-11' }
             ]
         };
 
@@ -1098,23 +1604,40 @@
             historyList.innerHTML = userData.transactions.map(t => `
                 <div class="history-item">
                     <span>${t.type} - ${t.description}</span>
-                    <span class="history-amount ${t.amount > 0 ? 'positive' : 'negative'}">${t.amount > 0 ? '+' : ''}₦${Math.abs(t.amount).toLocaleString()}</span>
+                    <span class="history-amount ${t.amount > 0 ? 'positive' : 'negative'}">
+                        ${t.amount > 0 ? '+' : ''}₦${Math.abs(t.amount).toLocaleString()}
+                    </span>
                 </div>
             `).join('');
         }
 
         function updateUIWithUserData(data) {
-            document.getElementById('walletBalance').innerText = `₦${data.wallet_balance.toLocaleString()}`;
-            document.getElementById('totalBalance').innerText = `₦${data.wallet_balance.toLocaleString()}`;
-            document.getElementById('userLevel').innerText = data.level;
-            document.getElementById('winRate').innerText = `${data.win_rate}%`;
-            document.getElementById('matchesPlayed').innerText = data.matches_played;
-            document.getElementById('totalWinnings').innerText = `₦${data.total_winnings.toLocaleString()}`;
-            document.getElementById('profileWinRate').innerText = `${data.win_rate}%`;
-            document.getElementById('profileMatches').innerText = data.matches_played;
-            document.getElementById('profileWinnings').innerText = `₦${data.total_winnings.toLocaleString()}`;
-            document.getElementById('profileName').innerText = data.display_name;
-            document.getElementById('profileEmail').innerText = data.email;
+            const balance = data.wallet_balance || 4760;
+            const level = data.level || 23;
+            const winRate = data.win_rate || 68;
+            const matches = data.matches_played || 362;
+            const winnings = data.total_winnings || 12450;
+            const displayName = data.display_name || userData.display_name;
+            const email = currentUser?.email || data.email || userData.email;
+            
+            document.getElementById('walletBalance').innerText = `₦${balance.toLocaleString()}`;
+            document.getElementById('totalBalance').innerText = `₦${balance.toLocaleString()}`;
+            document.getElementById('userLevel').innerText = level;
+            document.getElementById('profileLevel').innerText = level;
+            document.getElementById('winRate').innerText = `${winRate}%`;
+            document.getElementById('profileWinRate').innerText = `${winRate}%`;
+            document.getElementById('matchesPlayed').innerText = matches;
+            document.getElementById('profileMatches').innerText = matches;
+            document.getElementById('totalWinnings').innerText = `₦${winnings.toLocaleString()}`;
+            document.getElementById('profileWinnings').innerText = `₦${winnings.toLocaleString()}`;
+            document.getElementById('profileName').innerText = displayName;
+            document.getElementById('profileEmail').innerText = email;
+            
+            // Update level progress
+            const nextLevelXP = level * 100;
+            const currentXP = data.total_xp || 2300;
+            const progress = Math.min((currentXP / nextLevelXP) * 100, 100);
+            document.getElementById('levelProgress').style.width = `${progress}%`;
         }
 
         function showSplash() {
@@ -1131,25 +1654,55 @@
             document.getElementById('onboarding').style.display = 'flex';
             document.getElementById('authContainer').style.display = 'none';
             document.getElementById('homeContainer').style.display = 'none';
+            onboardingStep = 0;
+            updateOnboarding();
         }
 
-        function goToSlide(index) { onboardingStep = index; updateOnboarding(); }
-        function skipOnboarding() { showAuth(); }
-        function updateOnboarding() {
-            document.querySelectorAll('.onboarding-slide').forEach((s, i) => s.classList.toggle('active', i === onboardingStep));
-            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === onboardingStep));
+        function goToSlide(index) { 
+            onboardingStep = index; 
+            updateOnboarding(); 
         }
-        function nextOnboarding() { if (onboardingStep < 2) { onboardingStep++; updateOnboarding(); } else { showAuth(); } }
+        
+        function skipOnboarding() { 
+            showAuth(); 
+        }
+        
+        function updateOnboarding() {
+            document.querySelectorAll('.onboarding-slide').forEach((s, i) => {
+                s.classList.toggle('active', i === onboardingStep);
+            });
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                d.classList.toggle('active', i === onboardingStep);
+            });
+        }
+        
+        function nextOnboarding() { 
+            if (onboardingStep < 2) { 
+                onboardingStep++; 
+                updateOnboarding(); 
+            } else { 
+                showAuth(); 
+            } 
+        }
 
         let isSignUp = false;
         function showAuth() {
             document.getElementById('onboarding').style.display = 'none';
             document.getElementById('authContainer').style.display = 'flex';
         }
+        
         function switchAuthMode() {
             isSignUp = !isSignUp;
-            document.getElementById('authSubmitBtn').innerText = isSignUp ? 'SIGN UP' : 'LOGIN';
-            document.querySelector('.auth-switch').innerHTML = isSignUp ? 'Already have an account? <a href="#" onclick="switchAuthMode()">Login</a>' : 'Don\'t have an account? <a href="#" onclick="switchAuthMode()">Sign Up</a>';
+            const btn = document.getElementById('authSubmitBtn');
+            const switchText = document.querySelector('.auth-switch');
+            
+            if (isSignUp) {
+                btn.innerText = 'SIGN UP';
+                switchText.innerHTML = 'Already have an account? <a href="#" onclick="switchAuthMode()">Login</a>';
+            } else {
+                btn.innerText = 'LOGIN';
+                switchText.innerHTML = 'Don\'t have an account? <a href="#" onclick="switchAuthMode()">Sign Up</a>';
+            }
         }
 
         document.getElementById('authForm').addEventListener('submit', async (e) => {
@@ -1169,17 +1722,28 @@
             if (isSignUp) {
                 const { error } = await supabase.auth.signUp({ email, password });
                 if (error) alert(error.message);
-                else { alert('Sign up successful! Please check your email.'); switchAuthMode(); }
+                else { 
+                    alert('Sign up successful! Please check your email for verification.'); 
+                    switchAuthMode(); 
+                }
             } else {
                 const { error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) alert(error.message);
-                else { currentUser = (await supabase.auth.getSession()).data.session?.user; await loadUserData(); showHome(); }
+                else { 
+                    currentUser = (await supabase.auth.getSession()).data.session?.user; 
+                    await loadUserData(); 
+                    showHome(); 
+                }
             }
         });
 
         async function signInWithGoogle() {
-            if (ENV.SUPABASE_URL === 'https://your-project.supabase.co') { alert("Demo Mode: Configure Supabase for Google Sign In"); return; }
-            await supabase.auth.signInWithOAuth({ provider: 'google' });
+            if (ENV.SUPABASE_URL === 'https://your-project.supabase.co') { 
+                alert("Demo Mode: Configure Supabase for Google Sign In"); 
+                return; 
+            }
+            const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+            if (error) alert(error.message);
         }
 
         function showHome() {
@@ -1188,47 +1752,79 @@
             document.getElementById('tournamentContainer').style.display = 'none';
             document.getElementById('walletContainer').style.display = 'none';
             document.getElementById('profileContainer').style.display = 'none';
+            loadUserData();
         }
 
         function showSection(section, element) {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             if (element) element.classList.add('active');
+            
             document.getElementById('homeContainer').style.display = 'none';
             document.getElementById('tournamentContainer').style.display = 'none';
             document.getElementById('walletContainer').style.display = 'none';
             document.getElementById('profileContainer').style.display = 'none';
             document.getElementById(`${section}Container`).style.display = 'block';
             if (section === 'wallet') loadTransactions();
+            if (section === 'profile') loadUserData();
         }
 
         function selectGameMode(mode) {
             currentGameMode = mode;
-            if (mode === '1v1') startMatchmaking(200);
-            else if (mode === 'tournament') startMatchmaking(1000);
-            else if (mode === 'practice') { alert('Practice Mode - Free play!'); startGame(0); }
-            else if (mode === 'friend') { alert('Create friend match and share code'); startGame(0); }
+            if (mode === '1v1') {
+                startMatchmaking(200);
+            } else if (mode === 'tournament') {
+                startMatchmaking(1000);
+            } else if (mode === 'practice') { 
+                alert('Practice Mode - Free play! Improve your skills without risk.'); 
+                startGame(0); 
+            } else if (mode === 'friend') { 
+                const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+                alert(`Friend Match Created!\nShare code: ${code}\nYour friend can join using this code.`); 
+                startGame(0); 
+            }
         }
 
         function startMatchmaking(entryFee) {
-            if (userData.wallet_balance < entryFee && entryFee > 0) { alert(`Insufficient balance! Need ₦${entryFee}`); return; }
+            if (userData.wallet_balance < entryFee && entryFee > 0) { 
+                alert(`Insufficient balance! Need ₦${entryFee.toLocaleString()} to play. Please deposit funds.`); 
+                return; 
+            }
+            
             document.getElementById('entryFee').innerText = entryFee;
             document.getElementById('matchmakingContainer').style.display = 'flex';
+            
             let time = 10;
             matchmakingInterval = setInterval(() => {
                 time--;
                 document.getElementById('estTime').innerText = time;
-                if (time <= 0) { clearInterval(matchmakingInterval); cancelMatchmaking(); startGame(entryFee); }
+                if (time <= 0) { 
+                    clearInterval(matchmakingInterval); 
+                    cancelMatchmaking(); 
+                    startGame(entryFee); 
+                }
             }, 1000);
         }
 
-        function cancelMatchmaking() { clearInterval(matchmakingInterval); document.getElementById('matchmakingContainer').style.display = 'none'; }
+        function cancelMatchmaking() { 
+            clearInterval(matchmakingInterval); 
+            document.getElementById('matchmakingContainer').style.display = 'none'; 
+        }
 
         function startGame(entryFee) {
             currentEntryFee = entryFee;
             document.getElementById('matchmakingContainer').style.display = 'none';
             document.getElementById('gameStartingContainer').style.display = 'flex';
-            const opponents = ['StarGirl', 'SupplyKing', 'ShadowBlade', 'NinjaMaster'];
-            document.getElementById('player2Name').innerText = opponents[Math.floor(Math.random() * opponents.length)];
+            
+            const opponents = ['StarGirl', 'SupplyKing', 'ShadowBlade', 'NinjaMaster', 'Phoenix', 'Dragon'];
+            currentOpponent = opponents[Math.floor(Math.random() * opponents.length)];
+            document.getElementById('player2Name').innerText = currentOpponent;
+            
+            const avatarMap = {
+                'StarGirl': '⭐', 'SupplyKing': '👑', 'ShadowBlade': '🗡️',
+                'NinjaMaster': '🥷', 'Phoenix': '🔥', 'Dragon': '🐉'
+            };
+            document.getElementById('player2Avatar').innerHTML = avatarMap[currentOpponent] || '👤';
+            
             let countdown = 3;
             const countdownInterval = setInterval(() => {
                 countdown--;
@@ -1243,59 +1839,240 @@
 
         function startGameplay() {
             document.getElementById('gameplayContainer').style.display = 'flex';
-            playerScore = 0; opponentScore = 0; timeLeft = 30; gameActive = true;
+            playerScore = 0;
+            opponentScore = 0;
+            timeLeft = 30;
+            gameActive = true;
             updateGameScores();
+            
             gameInterval = setInterval(() => {
                 if (!gameActive) return;
+                
                 timeLeft--;
-                document.getElementById('gameTimer').innerText = `00:${timeLeft.toString().padStart(2, '0')}`;
-                if (Math.random() < 0.3) opponentScore += Math.floor(Math.random() * 10) + 5;
-                updateGameScores();
-                if (timeLeft <= 0) endGame();
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('gameTimer').innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Random opponent scoring
+                if (Math.random() < 0.3) {
+                    opponentScore += Math.floor(Math.random() * 10) + 5;
+                    updateGameScores();
+                }
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
             }, 1000);
         }
 
-        function handleTap() { if (!gameActive) return; playerScore += 10; updateGameScores(); }
-        function updateGameScores() { document.getElementById('playerScore').innerText = playerScore; document.getElementById('opponentScore').innerText = opponentScore; }
+        function handleTap() { 
+            if (!gameActive) return; 
+            playerScore += 10; 
+            updateGameScores();
+            
+            const tapBtn = document.getElementById('tapButton');
+            tapBtn.style.transform = 'scale(0.96)';
+            setTimeout(() => {
+                tapBtn.style.transform = 'scale(1)';
+            }, 100);
+        }
+        
+        function updateGameScores() { 
+            document.getElementById('playerScore').innerText = playerScore; 
+            document.getElementById('opponentScore').innerText = opponentScore; 
+        }
 
         function endGame() {
             gameActive = false;
             clearInterval(gameInterval);
             document.getElementById('gameplayContainer').style.display = 'none';
+            
             const isWin = playerScore > opponentScore;
             const winAmount = isWin ? currentEntryFee * 2 : 0;
             const platformFee = winAmount * (ENV.PLATFORM_FEE_PERCENTAGE / 100);
             const netWin = winAmount - platformFee;
+            
             document.getElementById('finalPlayerScore').innerText = playerScore;
             document.getElementById('finalOpponentScore').innerText = opponentScore;
+            document.getElementById('matchReward').innerText = `₦${winAmount.toLocaleString()}`;
+            document.getElementById('entryFeeDisplay').innerText = `₦${currentEntryFee.toLocaleString()}`;
             document.getElementById('winAmount').innerHTML = isWin ? `₦${netWin.toLocaleString()}` : '₦0.00';
             document.getElementById('platformFee').innerHTML = `₦${platformFee.toLocaleString()}`;
+            
+            const resultHeader = document.getElementById('resultHeader');
+            const resultText = document.getElementById('resultText');
+            const resultIcon = document.getElementById('resultIcon');
+            
             if (isWin) {
+                resultText.innerText = 'YOU WIN!';
+                resultIcon.innerText = '🏆';
+                resultHeader.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                // Update wallet
                 userData.wallet_balance += netWin;
                 userData.total_winnings += netWin;
                 userData.matches_played++;
                 userData.matches_won++;
                 userData.win_rate = Math.round((userData.matches_won / userData.matches_played) * 100);
+                userData.total_xp += 50;
+                
+                // Add transaction
+                userData.transactions.unshift({
+                    type: 'WIN',
+                    amount: netWin,
+                    description: `${currentGameMode?.toUpperCase() || '1v1'} Victory`,
+                    date: new Date().toISOString().split('T')[0]
+                });
+                
+                updateUIWithUserData(userData);
+            } else {
+                resultText.innerText = 'YOU LOSE!';
+                resultIcon.innerText = '😢';
+                resultHeader.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                userData.matches_played++;
+                userData.win_rate = Math.round((userData.matches_won / userData.matches_played) * 100);
+                userData.total_xp += 10;
                 updateUIWithUserData(userData);
             }
+            
             document.getElementById('gameResultContainer').style.display = 'flex';
         }
 
-        function continueToLobby() { document.getElementById('gameResultContainer').style.display = 'none'; showHome(); }
-        function shareResult() { alert('Result shared!'); }
-        function joinTournament(tournamentId) { selectGameMode('tournament'); }
-        function showCreateTournament() { alert('Create tournament feature coming soon'); }
-        function showDeposit() { let amount = prompt("Enter amount to deposit (₦):"); if (amount && amount >= ENV.MIN_DEPOSIT) { userData.wallet_balance += parseInt(amount); updateUIWithUserData(userData); loadTransactions(); alert(`Deposited ₦${amount}`); } }
-        function showWithdraw() { document.getElementById('withdrawModal').style.display = 'flex'; }
-        function processWithdraw() { let amount = document.getElementById('withdrawAmount').value; if (amount >= ENV.MIN_WITHDRAWAL && amount <= userData.wallet_balance) { userData.wallet_balance -= parseInt(amount); updateUIWithUserData(userData); loadTransactions(); alert(`Withdrawal of ₦${amount} initiated`); closeModal('withdrawModal'); } else alert('Invalid amount'); }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function copyReferralCode() { alert(`Referral code: YUME${Math.random().toString(36).substring(2, 8).toUpperCase()}`); }
-        function showCareerResults() { alert(`Career: ${userData.matches_played} matches, ${userData.matches_won} wins`); }
-        function showAchievements() { alert(`Level ${userData.level} player with ₦${userData.total_winnings} winnings`); }
-        function showSettings() { alert('Settings coming soon'); }
-        function showSupport() { alert(`Contact: ${ENV.SUPPORT_EMAIL} or ${ENV.SUPPORT_PHONE}`); }
-        function logout() { currentUser = null; showSplash(); }
+        function continueToLobby() { 
+            document.getElementById('gameResultContainer').style.display = 'none'; 
+            showHome(); 
+        }
+        
+        function shareResult() { 
+            const result = document.getElementById('resultText').innerText;
+            const winAmount = document.getElementById('winAmount').innerText;
+            const message = `I ${result} on Yume! ${winAmount !== '₦0.00' ? `Won ${winAmount}` : ''} Play Yume and win real cash!`;
+            
+            if (navigator.share) {
+                navigator.share({ title: 'Yume Gaming', text: message });
+            } else {
+                navigator.clipboard.writeText(message);
+                alert('Result copied to clipboard! Share with your friends.');
+            }
+        }
+        
+        function joinTournament(tournamentId) { 
+            let entryFee = 0;
+            let tournamentName = "";
+            switch(tournamentId) {
+                case 'rookie': entryFee = 200; tournamentName = "Rookie Cup"; break;
+                case 'pro': entryFee = 1000; tournamentName = "Pro League"; break;
+                case 'supay': entryFee = 1500; tournamentName = "Supay Masters"; break;
+            }
+            
+            if (userData.wallet_balance >= entryFee) {
+                if (confirm(`Join ${tournamentName} for ₦${entryFee.toLocaleString()}?`)) {
+                    currentGameMode = tournamentName;
+                    startMatchmaking(entryFee);
+                }
+            } else {
+                alert(`Insufficient balance! Need ₦${entryFee.toLocaleString()} to join ${tournamentName}.`);
+            }
+        }
+        
+        function showCreateTournament() { 
+            alert('🏆 Create Custom Tournament\nSet your own prize pool, entry fee, and invite players! Features coming soon.'); 
+        }
+        
+        function showDeposit() { 
+            let amount = prompt("Enter deposit amount (₦):", "1000");
+            if (amount && !isNaN(amount) && amount >= ENV.MIN_DEPOSIT) { 
+                userData.wallet_balance += parseInt(amount);
+                userData.transactions.unshift({
+                    type: 'DEPOSIT',
+                    amount: parseInt(amount),
+                    description: 'Bank Transfer',
+                    date: new Date().toISOString().split('T')[0]
+                });
+                updateUIWithUserData(userData); 
+                loadTransactions();
+                alert(`✅ ₦${amount} deposited successfully! New balance: ₦${userData.wallet_balance.toLocaleString()}`); 
+            } else if (amount && amount < ENV.MIN_DEPOSIT) {
+                alert(`Minimum deposit amount is ₦${ENV.MIN_DEPOSIT}`);
+            }
+        }
+        
+        function showWithdraw() { 
+            document.getElementById('withdrawModal').style.display = 'flex'; 
+        }
+        
+        function processWithdraw() { 
+            const amount = document.getElementById('withdrawAmount').value;
+            const method = document.getElementById('withdrawMethod').value;
+            
+            if (!amount || amount < ENV.MIN_WITHDRAWAL) {
+                alert(`Minimum withdrawal amount is ₦${ENV.MIN_WITHDRAWAL}`);
+                return;
+            }
+            
+            if (amount > userData.wallet_balance) {
+                alert(`Insufficient balance! Your balance is ₦${userData.wallet_balance.toLocaleString()}`);
+                return;
+            }
+            
+            userData.wallet_balance -= parseInt(amount);
+            userData.transactions.unshift({
+                type: 'WITHDRAWAL',
+                amount: -parseInt(amount),
+                description: method === 'bank' ? 'Bank Transfer' : method === 'palmpay' ? 'PalmPay' : 'Supay',
+                date: new Date().toISOString().split('T')[0]
+            });
+            updateUIWithUserData(userData);
+            loadTransactions();
+            
+            let methodName = "";
+            switch(method) {
+                case 'bank': methodName = "Bank Transfer"; break;
+                case 'palmpay': methodName = "PalmPay"; break;
+                case 'supay': methodName = "Supay"; break;
+            }
+            
+            alert(`✅ Withdrawal of ₦${amount} via ${methodName} initiated!\nFunds will arrive within 1-2 business days.`);
+            closeModal('withdrawModal');
+            document.getElementById('withdrawAmount').value = '';
+        }
+        
+        function closeModal(id) { 
+            document.getElementById(id).style.display = 'none'; 
+        }
+        
+        function copyReferralCode() { 
+            const code = `YUME${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+            navigator.clipboard.writeText(code);
+            alert(`✅ Referral code ${code} copied!\nShare with friends. You earn ₦${ENV.REFERRAL_BONUS.toLocaleString()} when they sign up and play!`); 
+        }
+        
+        function showCareerResults() { 
+            const wins = userData.matches_won || 0;
+            const losses = userData.matches_played - wins;
+            alert(`📊 Career Results\n\nMatches Played: ${userData.matches_played}\nWins: ${wins}\nLosses: ${losses}\nWin Rate: ${userData.win_rate}%\nTotal Winnings: ₦${userData.total_winnings.toLocaleString()}`);
+        }
+        
+        function showAchievements() { 
+            alert(`🏅 Achievements\n\n⭐ Level ${userData.level} Player\n💰 Won ₦${userData.total_winnings.toLocaleString()}\n🎯 ${userData.win_rate}% Win Rate\n🎮 ${userData.matches_played} Matches Played\n\nKeep playing to unlock more!`); 
+        }
+        
+        function showSettings() { 
+            alert(`⚙️ Settings\n\n• Notifications: On\n• Sound Effects: On\n• Vibration: On\n• Privacy Mode: Off\n\nMore settings coming soon!`); 
+        }
+        
+        function showSupport() { 
+            alert(`❓ Support\n\nEmail: ${ENV.SUPPORT_EMAIL}\nPhone: ${ENV.SUPPORT_PHONE}\nTelegram: @YumeSupport\n\n24/7 Customer Support Available`); 
+        }
+        
+        function logout() { 
+            if (supabase && ENV.SUPABASE_URL !== 'https://your-project.supabase.co') {
+                supabase.auth.signOut();
+            }
+            currentUser = null; 
+            showSplash(); 
+        }
 
+        // Initialize app
         document.addEventListener('DOMContentLoaded', initSupabase);
     </script>
 </body>
