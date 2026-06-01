@@ -1523,557 +1523,656 @@
         // YUME GAMING PLATFORM - MAIN SCRIPT
         // ============================================
         
-        // Configuration - Replace with your .env values
-        const ENV = {
-            SUPABASE_URL: 'https://your-project.supabase.co',
-            SUPABASE_ANON_KEY: 'your-anon-key-here',
-            APP_NAME: 'Yume',
-            MIN_WITHDRAWAL: 100,
-            MAX_WITHDRAWAL: 1000000,
-            MIN_DEPOSIT: 100,
-            PLATFORM_FEE_PERCENTAGE: 10,
-            REFERRAL_BONUS: 1000,
-            ENABLE_GOOGLE_LOGIN: true,
-            ENABLE_TOURNAMENTS: true,
-            SUPPORT_EMAIL: 'support@yume.com',
-            SUPPORT_PHONE: '+234XXXXXXXXXX'
-        };
+        // Check if already initialized to prevent duplicate declaration errors
+        if (typeof window.yumeInitialized === 'undefined') {
+            window.yumeInitialized = true;
+            
+            // Configuration - Replace with your Supabase keys
+            const ENV = {
+                SUPABASE_URL: 'https://yume-platform.supabase.co',  // Replace with your actual URL
+                SUPABASE_ANON_KEY: 'your-actual-anon-key-here',     // Replace with your actual key
+                APP_NAME: 'Yume',
+                MIN_WITHDRAWAL: 100,
+                MAX_WITHDRAWAL: 1000000,
+                MIN_DEPOSIT: 100,
+                PLATFORM_FEE_PERCENTAGE: 10,
+                REFERRAL_BONUS: 1000,
+                ENABLE_GOOGLE_LOGIN: true,
+                ENABLE_TOURNAMENTS: true,
+                SUPPORT_EMAIL: 'support@yume.com',
+                SUPPORT_PHONE: '+234XXXXXXXXXX'
+            };
 
-        let supabase;
-        let currentUser = null;
-        let currentGameMode = null;
-        let currentEntryFee = 0;
-        let matchmakingInterval = null;
-        let gameInterval = null;
-        let playerScore = 0;
-        let opponentScore = 0;
-        let timeLeft = 30;
-        let gameActive = false;
-        let currentOpponent = "";
+            let supabase;
+            let currentUser = null;
+            let currentGameMode = null;
+            let currentEntryFee = 0;
+            let matchmakingInterval = null;
+            let gameInterval = null;
+            let playerScore = 0;
+            let opponentScore = 0;
+            let timeLeft = 30;
+            let gameActive = false;
+            let currentOpponent = "";
 
-        // Demo user data
-        let userData = {
-            wallet_balance: 4760,
-            level: 23,
-            win_rate: 68,
-            matches_played: 362,
-            total_winnings: 12450,
-            display_name: "YumePlayer",
-            email: "player@yume.com",
-            matches_won: 246,
-            total_xp: 2300,
-            transactions: [
-                { type: 'WIN', amount: 400, description: '1v1 Battle', date: '2024-01-15' },
-                { type: 'DEPOSIT', amount: 5000, description: 'Bank Transfer', date: '2024-01-14' },
-                { type: 'WITHDRAWAL', amount: -2000, description: 'To Bank', date: '2024-01-13' },
-                { type: 'WIN', amount: 10000, description: 'Tournament Victory', date: '2024-01-12' },
-                { type: 'WIN', amount: 200, description: '1v1 Battle', date: '2024-01-11' }
-            ]
-        };
+            // Demo user data
+            let userData = {
+                wallet_balance: 4760,
+                level: 23,
+                win_rate: 68,
+                matches_played: 362,
+                total_winnings: 12450,
+                display_name: "YumePlayer",
+                email: "player@yume.com",
+                matches_won: 246,
+                total_xp: 2300,
+                transactions: [
+                    { type: 'WIN', amount: 400, description: '1v1 Battle', date: '2024-01-15' },
+                    { type: 'DEPOSIT', amount: 5000, description: 'Bank Transfer', date: '2024-01-14' },
+                    { type: 'WITHDRAWAL', amount: -2000, description: 'To Bank', date: '2024-01-13' },
+                    { type: 'WIN', amount: 10000, description: 'Tournament Victory', date: '2024-01-12' },
+                    { type: 'WIN', amount: 200, description: '1v1 Battle', date: '2024-01-11' }
+                ]
+            };
 
-        // Initialize Supabase
-        async function initSupabase() {
-            try {
-                supabase = window.supabase.createClient(ENV.SUPABASE_URL, ENV.SUPABASE_ANON_KEY);
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session) {
-                    currentUser = session.user;
-                    await loadUserData();
-                    showHome();
-                } else {
+            // Initialize Supabase
+            async function initSupabase() {
+                try {
+                    if (ENV.SUPABASE_URL && ENV.SUPABASE_URL !== 'https://your-project.supabase.co') {
+                        supabase = window.supabase.createClient(ENV.SUPABASE_URL, ENV.SUPABASE_ANON_KEY);
+                        const { data: { session } } = await supabase.auth.getSession();
+                        if (session) {
+                            currentUser = session.user;
+                            await loadUserData();
+                            showHome();
+                        } else {
+                            showSplash();
+                        }
+                    } else {
+                        console.log("Demo mode - Using default data");
+                        showSplash();
+                    }
+                } catch (e) {
+                    console.log("Demo mode - Supabase not configured");
                     showSplash();
                 }
-            } catch (e) {
-                console.log("Demo mode - Supabase not configured");
-                showSplash();
             }
-        }
 
-        async function loadUserData() {
-            if (!currentUser) {
+            async function loadUserData() {
+                if (!currentUser) {
+                    updateUIWithUserData(userData);
+                    loadTransactions();
+                    return;
+                }
                 updateUIWithUserData(userData);
                 loadTransactions();
-                return;
             }
-            updateUIWithUserData(userData);
-            loadTransactions();
-        }
 
-        function loadTransactions() {
-            const historyList = document.getElementById('transactionHistory');
-            historyList.innerHTML = userData.transactions.map(t => `
-                <div class="history-item">
-                    <span>${t.type} - ${t.description}</span>
-                    <span class="history-amount ${t.amount > 0 ? 'positive' : 'negative'}">
-                        ${t.amount > 0 ? '+' : ''}₦${Math.abs(t.amount).toLocaleString()}
-                    </span>
-                </div>
-            `).join('');
-        }
+            function loadTransactions() {
+                const historyList = document.getElementById('transactionHistory');
+                if (historyList) {
+                    historyList.innerHTML = userData.transactions.map(t => `
+                        <div class="history-item">
+                            <span>${t.type} - ${t.description}</span>
+                            <span class="history-amount ${t.amount > 0 ? 'positive' : 'negative'}">
+                                ${t.amount > 0 ? '+' : ''}₦${Math.abs(t.amount).toLocaleString()}
+                            </span>
+                        </div>
+                    `).join('');
+                }
+            }
 
-        function updateUIWithUserData(data) {
-            const balance = data.wallet_balance || 4760;
-            const level = data.level || 23;
-            const winRate = data.win_rate || 68;
-            const matches = data.matches_played || 362;
-            const winnings = data.total_winnings || 12450;
-            const displayName = data.display_name || userData.display_name;
-            const email = currentUser?.email || data.email || userData.email;
+            function updateUIWithUserData(data) {
+                const balance = data.wallet_balance || 4760;
+                const level = data.level || 23;
+                const winRate = data.win_rate || 68;
+                const matches = data.matches_played || 362;
+                const winnings = data.total_winnings || 12450;
+                const displayName = data.display_name || userData.display_name;
+                const email = currentUser?.email || data.email || userData.email;
+                
+                const elements = {
+                    walletBalance: document.getElementById('walletBalance'),
+                    totalBalance: document.getElementById('totalBalance'),
+                    userLevel: document.getElementById('userLevel'),
+                    profileLevel: document.getElementById('profileLevel'),
+                    winRate: document.getElementById('winRate'),
+                    profileWinRate: document.getElementById('profileWinRate'),
+                    matchesPlayed: document.getElementById('matchesPlayed'),
+                    profileMatches: document.getElementById('profileMatches'),
+                    totalWinnings: document.getElementById('totalWinnings'),
+                    profileWinnings: document.getElementById('profileWinnings'),
+                    profileName: document.getElementById('profileName'),
+                    profileEmail: document.getElementById('profileEmail'),
+                    levelProgress: document.getElementById('levelProgress')
+                };
+                
+                if (elements.walletBalance) elements.walletBalance.innerText = `₦${balance.toLocaleString()}`;
+                if (elements.totalBalance) elements.totalBalance.innerText = `₦${balance.toLocaleString()}`;
+                if (elements.userLevel) elements.userLevel.innerText = level;
+                if (elements.profileLevel) elements.profileLevel.innerText = level;
+                if (elements.winRate) elements.winRate.innerText = `${winRate}%`;
+                if (elements.profileWinRate) elements.profileWinRate.innerText = `${winRate}%`;
+                if (elements.matchesPlayed) elements.matchesPlayed.innerText = matches;
+                if (elements.profileMatches) elements.profileMatches.innerText = matches;
+                if (elements.totalWinnings) elements.totalWinnings.innerText = `₦${winnings.toLocaleString()}`;
+                if (elements.profileWinnings) elements.profileWinnings.innerText = `₦${winnings.toLocaleString()}`;
+                if (elements.profileName) elements.profileName.innerText = displayName;
+                if (elements.profileEmail) elements.profileEmail.innerText = email;
+                
+                if (elements.levelProgress) {
+                    const nextLevelXP = level * 100;
+                    const currentXP = data.total_xp || 2300;
+                    const progress = Math.min((currentXP / nextLevelXP) * 100, 100);
+                    elements.levelProgress.style.width = `${progress}%`;
+                }
+            }
+
+            function showSplash() {
+                const splash = document.getElementById('splashScreen');
+                if (splash) {
+                    setTimeout(() => {
+                        splash.classList.add('hide');
+                        setTimeout(() => showOnboarding(), 500);
+                    }, 2000);
+                }
+            }
+
+            let onboardingStep = 0;
             
-            document.getElementById('walletBalance').innerText = `₦${balance.toLocaleString()}`;
-            document.getElementById('totalBalance').innerText = `₦${balance.toLocaleString()}`;
-            document.getElementById('userLevel').innerText = level;
-            document.getElementById('profileLevel').innerText = level;
-            document.getElementById('winRate').innerText = `${winRate}%`;
-            document.getElementById('profileWinRate').innerText = `${winRate}%`;
-            document.getElementById('matchesPlayed').innerText = matches;
-            document.getElementById('profileMatches').innerText = matches;
-            document.getElementById('totalWinnings').innerText = `₦${winnings.toLocaleString()}`;
-            document.getElementById('profileWinnings').innerText = `₦${winnings.toLocaleString()}`;
-            document.getElementById('profileName').innerText = displayName;
-            document.getElementById('profileEmail').innerText = email;
-            
-            // Update level progress
-            const nextLevelXP = level * 100;
-            const currentXP = data.total_xp || 2300;
-            const progress = Math.min((currentXP / nextLevelXP) * 100, 100);
-            document.getElementById('levelProgress').style.width = `${progress}%`;
-        }
+            function showOnboarding() {
+                const splashScreen = document.getElementById('splashScreen');
+                const onboarding = document.getElementById('onboarding');
+                const authContainer = document.getElementById('authContainer');
+                const homeContainer = document.getElementById('homeContainer');
+                
+                if (splashScreen) splashScreen.classList.add('hide');
+                if (onboarding) onboarding.style.display = 'flex';
+                if (authContainer) authContainer.style.display = 'none';
+                if (homeContainer) homeContainer.style.display = 'none';
+                onboardingStep = 0;
+                updateOnboarding();
+            }
 
-        function showSplash() {
-            const splash = document.getElementById('splashScreen');
-            setTimeout(() => {
-                splash.classList.add('hide');
-                setTimeout(() => showOnboarding(), 500);
-            }, 2000);
-        }
-
-        let onboardingStep = 0;
-        function showOnboarding() {
-            document.getElementById('splashScreen').classList.add('hide');
-            document.getElementById('onboarding').style.display = 'flex';
-            document.getElementById('authContainer').style.display = 'none';
-            document.getElementById('homeContainer').style.display = 'none';
-            onboardingStep = 0;
-            updateOnboarding();
-        }
-
-        function goToSlide(index) { 
-            onboardingStep = index; 
-            updateOnboarding(); 
-        }
-        
-        function skipOnboarding() { 
-            showAuth(); 
-        }
-        
-        function updateOnboarding() {
-            document.querySelectorAll('.onboarding-slide').forEach((s, i) => {
-                s.classList.toggle('active', i === onboardingStep);
-            });
-            document.querySelectorAll('.dot').forEach((d, i) => {
-                d.classList.toggle('active', i === onboardingStep);
-            });
-        }
-        
-        function nextOnboarding() { 
-            if (onboardingStep < 2) { 
-                onboardingStep++; 
+            function goToSlide(index) { 
+                onboardingStep = index; 
                 updateOnboarding(); 
-            } else { 
+            }
+            
+            function skipOnboarding() { 
                 showAuth(); 
-            } 
-        }
-
-        let isSignUp = false;
-        function showAuth() {
-            document.getElementById('onboarding').style.display = 'none';
-            document.getElementById('authContainer').style.display = 'flex';
-        }
-        
-        function switchAuthMode() {
-            isSignUp = !isSignUp;
-            const btn = document.getElementById('authSubmitBtn');
-            const switchText = document.querySelector('.auth-switch');
-            
-            if (isSignUp) {
-                btn.innerText = 'SIGN UP';
-                switchText.innerHTML = 'Already have an account? <a href="#" onclick="switchAuthMode()">Login</a>';
-            } else {
-                btn.innerText = 'LOGIN';
-                switchText.innerHTML = 'Don\'t have an account? <a href="#" onclick="switchAuthMode()">Sign Up</a>';
-            }
-        }
-
-        document.getElementById('authForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            if (ENV.SUPABASE_URL === 'https://your-project.supabase.co') {
-                currentUser = { email, id: 'demo-user' };
-                userData.display_name = email.split('@')[0];
-                userData.email = email;
-                updateUIWithUserData(userData);
-                showHome();
-                return;
             }
             
-            if (isSignUp) {
-                const { error } = await supabase.auth.signUp({ email, password });
-                if (error) alert(error.message);
-                else { 
-                    alert('Sign up successful! Please check your email for verification.'); 
-                    switchAuthMode(); 
-                }
-            } else {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) alert(error.message);
-                else { 
-                    currentUser = (await supabase.auth.getSession()).data.session?.user; 
-                    await loadUserData(); 
-                    showHome(); 
-                }
-            }
-        });
-
-        async function signInWithGoogle() {
-            if (ENV.SUPABASE_URL === 'https://your-project.supabase.co') { 
-                alert("Demo Mode: Configure Supabase for Google Sign In"); 
-                return; 
-            }
-            const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-            if (error) alert(error.message);
-        }
-
-        function showHome() {
-            document.getElementById('authContainer').style.display = 'none';
-            document.getElementById('homeContainer').style.display = 'block';
-            document.getElementById('tournamentContainer').style.display = 'none';
-            document.getElementById('walletContainer').style.display = 'none';
-            document.getElementById('profileContainer').style.display = 'none';
-            loadUserData();
-        }
-
-        function showSection(section, element) {
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            if (element) element.classList.add('active');
-            
-            document.getElementById('homeContainer').style.display = 'none';
-            document.getElementById('tournamentContainer').style.display = 'none';
-            document.getElementById('walletContainer').style.display = 'none';
-            document.getElementById('profileContainer').style.display = 'none';
-            document.getElementById(`${section}Container`).style.display = 'block';
-            if (section === 'wallet') loadTransactions();
-            if (section === 'profile') loadUserData();
-        }
-
-        function selectGameMode(mode) {
-            currentGameMode = mode;
-            if (mode === '1v1') {
-                startMatchmaking(200);
-            } else if (mode === 'tournament') {
-                startMatchmaking(1000);
-            } else if (mode === 'practice') { 
-                alert('Practice Mode - Free play! Improve your skills without risk.'); 
-                startGame(0); 
-            } else if (mode === 'friend') { 
-                const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-                alert(`Friend Match Created!\nShare code: ${code}\nYour friend can join using this code.`); 
-                startGame(0); 
-            }
-        }
-
-        function startMatchmaking(entryFee) {
-            if (userData.wallet_balance < entryFee && entryFee > 0) { 
-                alert(`Insufficient balance! Need ₦${entryFee.toLocaleString()} to play. Please deposit funds.`); 
-                return; 
+            function updateOnboarding() {
+                const slides = document.querySelectorAll('.onboarding-slide');
+                const dots = document.querySelectorAll('.dot');
+                slides.forEach((s, i) => {
+                    s.classList.toggle('active', i === onboardingStep);
+                });
+                dots.forEach((d, i) => {
+                    d.classList.toggle('active', i === onboardingStep);
+                });
             }
             
-            document.getElementById('entryFee').innerText = entryFee;
-            document.getElementById('matchmakingContainer').style.display = 'flex';
-            
-            let time = 10;
-            matchmakingInterval = setInterval(() => {
-                time--;
-                document.getElementById('estTime').innerText = time;
-                if (time <= 0) { 
-                    clearInterval(matchmakingInterval); 
-                    cancelMatchmaking(); 
-                    startGame(entryFee); 
-                }
-            }, 1000);
-        }
+            function nextOnboarding() { 
+                if (onboardingStep < 2) { 
+                    onboardingStep++; 
+                    updateOnboarding(); 
+                } else { 
+                    showAuth(); 
+                } 
+            }
 
-        function cancelMatchmaking() { 
-            clearInterval(matchmakingInterval); 
-            document.getElementById('matchmakingContainer').style.display = 'none'; 
-        }
-
-        function startGame(entryFee) {
-            currentEntryFee = entryFee;
-            document.getElementById('matchmakingContainer').style.display = 'none';
-            document.getElementById('gameStartingContainer').style.display = 'flex';
+            let isSignUp = false;
             
-            const opponents = ['StarGirl', 'SupplyKing', 'ShadowBlade', 'NinjaMaster', 'Phoenix', 'Dragon'];
-            currentOpponent = opponents[Math.floor(Math.random() * opponents.length)];
-            document.getElementById('player2Name').innerText = currentOpponent;
+            function showAuth() {
+                const onboarding = document.getElementById('onboarding');
+                const authContainer = document.getElementById('authContainer');
+                if (onboarding) onboarding.style.display = 'none';
+                if (authContainer) authContainer.style.display = 'flex';
+            }
             
-            const avatarMap = {
-                'StarGirl': '⭐', 'SupplyKing': '👑', 'ShadowBlade': '🗡️',
-                'NinjaMaster': '🥷', 'Phoenix': '🔥', 'Dragon': '🐉'
-            };
-            document.getElementById('player2Avatar').innerHTML = avatarMap[currentOpponent] || '👤';
-            
-            let countdown = 3;
-            const countdownInterval = setInterval(() => {
-                countdown--;
-                document.getElementById('countdownNum').innerText = countdown;
-                if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-                    document.getElementById('gameStartingContainer').style.display = 'none';
-                    startGameplay();
-                }
-            }, 1000);
-        }
-
-        function startGameplay() {
-            document.getElementById('gameplayContainer').style.display = 'flex';
-            playerScore = 0;
-            opponentScore = 0;
-            timeLeft = 30;
-            gameActive = true;
-            updateGameScores();
-            
-            gameInterval = setInterval(() => {
-                if (!gameActive) return;
+            function switchAuthMode() {
+                isSignUp = !isSignUp;
+                const btn = document.getElementById('authSubmitBtn');
+                const switchText = document.querySelector('.auth-switch');
                 
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                document.getElementById('gameTimer').innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                // Random opponent scoring
-                if (Math.random() < 0.3) {
-                    opponentScore += Math.floor(Math.random() * 10) + 5;
-                    updateGameScores();
+                if (btn) {
+                    btn.innerText = isSignUp ? 'SIGN UP' : 'LOGIN';
                 }
-                
-                if (timeLeft <= 0) {
-                    endGame();
+                if (switchText) {
+                    switchText.innerHTML = isSignUp ? 
+                        'Already have an account? <a href="#" onclick="switchAuthMode()">Login</a>' : 
+                        'Don\'t have an account? <a href="#" onclick="switchAuthMode()">Sign Up</a>';
                 }
-            }, 1000);
-        }
+            }
 
-        function handleTap() { 
-            if (!gameActive) return; 
-            playerScore += 10; 
-            updateGameScores();
-            
-            const tapBtn = document.getElementById('tapButton');
-            tapBtn.style.transform = 'scale(0.96)';
-            setTimeout(() => {
-                tapBtn.style.transform = 'scale(1)';
-            }, 100);
-        }
-        
-        function updateGameScores() { 
-            document.getElementById('playerScore').innerText = playerScore; 
-            document.getElementById('opponentScore').innerText = opponentScore; 
-        }
+            // Handle auth form submission
+            const authForm = document.getElementById('authForm');
+            if (authForm) {
+                authForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    
+                    if (ENV.SUPABASE_URL === 'https://your-project.supabase.co') {
+                        currentUser = { email, id: 'demo-user' };
+                        userData.display_name = email.split('@')[0];
+                        userData.email = email;
+                        updateUIWithUserData(userData);
+                        showHome();
+                        return;
+                    }
+                    
+                    if (supabase) {
+                        if (isSignUp) {
+                            const { error } = await supabase.auth.signUp({ email, password });
+                            if (error) alert(error.message);
+                            else { 
+                                alert('Sign up successful! Please check your email for verification.'); 
+                                switchAuthMode(); 
+                            }
+                        } else {
+                            const { error } = await supabase.auth.signInWithPassword({ email, password });
+                            if (error) alert(error.message);
+                            else { 
+                                const { data: { session } } = await supabase.auth.getSession();
+                                currentUser = session?.user; 
+                                await loadUserData(); 
+                                showHome(); 
+                            }
+                        }
+                    }
+                });
+            }
 
-        function endGame() {
-            gameActive = false;
-            clearInterval(gameInterval);
-            document.getElementById('gameplayContainer').style.display = 'none';
-            
-            const isWin = playerScore > opponentScore;
-            const winAmount = isWin ? currentEntryFee * 2 : 0;
-            const platformFee = winAmount * (ENV.PLATFORM_FEE_PERCENTAGE / 100);
-            const netWin = winAmount - platformFee;
-            
-            document.getElementById('finalPlayerScore').innerText = playerScore;
-            document.getElementById('finalOpponentScore').innerText = opponentScore;
-            document.getElementById('matchReward').innerText = `₦${winAmount.toLocaleString()}`;
-            document.getElementById('entryFeeDisplay').innerText = `₦${currentEntryFee.toLocaleString()}`;
-            document.getElementById('winAmount').innerHTML = isWin ? `₦${netWin.toLocaleString()}` : '₦0.00';
-            document.getElementById('platformFee').innerHTML = `₦${platformFee.toLocaleString()}`;
-            
-            const resultHeader = document.getElementById('resultHeader');
-            const resultText = document.getElementById('resultText');
-            const resultIcon = document.getElementById('resultIcon');
-            
-            if (isWin) {
-                resultText.innerText = 'YOU WIN!';
-                resultIcon.innerText = '🏆';
-                resultHeader.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                // Update wallet
-                userData.wallet_balance += netWin;
-                userData.total_winnings += netWin;
-                userData.matches_played++;
-                userData.matches_won++;
-                userData.win_rate = Math.round((userData.matches_won / userData.matches_played) * 100);
-                userData.total_xp += 50;
+            window.signInWithGoogle = async function() {
+                if (ENV.SUPABASE_URL === 'https://your-project.supabase.co') { 
+                    alert("Demo Mode: Configure Supabase for Google Sign In"); 
+                    return; 
+                }
+                if (supabase) {
+                    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+                    if (error) alert(error.message);
+                }
+            }
+
+            function showHome() {
+                const authContainer = document.getElementById('authContainer');
+                const homeContainer = document.getElementById('homeContainer');
+                const tournamentContainer = document.getElementById('tournamentContainer');
+                const walletContainer = document.getElementById('walletContainer');
+                const profileContainer = document.getElementById('profileContainer');
                 
-                // Add transaction
-                userData.transactions.unshift({
-                    type: 'WIN',
-                    amount: netWin,
-                    description: `${currentGameMode?.toUpperCase() || '1v1'} Victory`,
-                    date: new Date().toISOString().split('T')[0]
+                if (authContainer) authContainer.style.display = 'none';
+                if (homeContainer) homeContainer.style.display = 'block';
+                if (tournamentContainer) tournamentContainer.style.display = 'none';
+                if (walletContainer) walletContainer.style.display = 'none';
+                if (profileContainer) profileContainer.style.display = 'none';
+                loadUserData();
+            }
+
+            window.showSection = function(section, element) {
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                if (element) element.classList.add('active');
+                
+                const containers = ['home', 'tournaments', 'wallet', 'profile'];
+                containers.forEach(cont => {
+                    const container = document.getElementById(`${cont}Container`);
+                    if (container) container.style.display = 'none';
                 });
                 
-                updateUIWithUserData(userData);
-            } else {
-                resultText.innerText = 'YOU LOSE!';
-                resultIcon.innerText = '😢';
-                resultHeader.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-                userData.matches_played++;
-                userData.win_rate = Math.round((userData.matches_won / userData.matches_played) * 100);
-                userData.total_xp += 10;
-                updateUIWithUserData(userData);
+                const sectionContainer = document.getElementById(`${section}Container`);
+                if (sectionContainer) sectionContainer.style.display = 'block';
+                if (section === 'wallet') loadTransactions();
+                if (section === 'profile') loadUserData();
             }
-            
-            document.getElementById('gameResultContainer').style.display = 'flex';
-        }
 
-        function continueToLobby() { 
-            document.getElementById('gameResultContainer').style.display = 'none'; 
-            showHome(); 
-        }
-        
-        function shareResult() { 
-            const result = document.getElementById('resultText').innerText;
-            const winAmount = document.getElementById('winAmount').innerText;
-            const message = `I ${result} on Yume! ${winAmount !== '₦0.00' ? `Won ${winAmount}` : ''} Play Yume and win real cash!`;
-            
-            if (navigator.share) {
-                navigator.share({ title: 'Yume Gaming', text: message });
-            } else {
-                navigator.clipboard.writeText(message);
-                alert('Result copied to clipboard! Share with your friends.');
-            }
-        }
-        
-        function joinTournament(tournamentId) { 
-            let entryFee = 0;
-            let tournamentName = "";
-            switch(tournamentId) {
-                case 'rookie': entryFee = 200; tournamentName = "Rookie Cup"; break;
-                case 'pro': entryFee = 1000; tournamentName = "Pro League"; break;
-                case 'supay': entryFee = 1500; tournamentName = "Supay Masters"; break;
-            }
-            
-            if (userData.wallet_balance >= entryFee) {
-                if (confirm(`Join ${tournamentName} for ₦${entryFee.toLocaleString()}?`)) {
-                    currentGameMode = tournamentName;
-                    startMatchmaking(entryFee);
+            window.selectGameMode = function(mode) {
+                currentGameMode = mode;
+                if (mode === '1v1') {
+                    window.startMatchmaking(200);
+                } else if (mode === 'tournament') {
+                    window.startMatchmaking(1000);
+                } else if (mode === 'practice') { 
+                    alert('Practice Mode - Free play! Improve your skills without risk.'); 
+                    window.startGame(0); 
+                } else if (mode === 'friend') { 
+                    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+                    alert(`Friend Match Created!\nShare code: ${code}\nYour friend can join using this code.`); 
+                    window.startGame(0); 
                 }
-            } else {
-                alert(`Insufficient balance! Need ₦${entryFee.toLocaleString()} to join ${tournamentName}.`);
             }
-        }
-        
-        function showCreateTournament() { 
-            alert('🏆 Create Custom Tournament\nSet your own prize pool, entry fee, and invite players! Features coming soon.'); 
-        }
-        
-        function showDeposit() { 
-            let amount = prompt("Enter deposit amount (₦):", "1000");
-            if (amount && !isNaN(amount) && amount >= ENV.MIN_DEPOSIT) { 
-                userData.wallet_balance += parseInt(amount);
+
+            window.startMatchmaking = function(entryFee) {
+                if (userData.wallet_balance < entryFee && entryFee > 0) { 
+                    alert(`Insufficient balance! Need ₦${entryFee.toLocaleString()} to play. Please deposit funds.`); 
+                    return; 
+                }
+                
+                const entryFeeSpan = document.getElementById('entryFee');
+                if (entryFeeSpan) entryFeeSpan.innerText = entryFee;
+                
+                const matchmakingContainer = document.getElementById('matchmakingContainer');
+                if (matchmakingContainer) matchmakingContainer.style.display = 'flex';
+                
+                let time = 10;
+                matchmakingInterval = setInterval(() => {
+                    time--;
+                    const estTimeSpan = document.getElementById('estTime');
+                    if (estTimeSpan) estTimeSpan.innerText = time;
+                    if (time <= 0) { 
+                        clearInterval(matchmakingInterval); 
+                        window.cancelMatchmaking(); 
+                        window.startGame(entryFee); 
+                    }
+                }, 1000);
+            }
+
+            window.cancelMatchmaking = function() { 
+                clearInterval(matchmakingInterval); 
+                const matchmakingContainer = document.getElementById('matchmakingContainer');
+                if (matchmakingContainer) matchmakingContainer.style.display = 'none'; 
+            }
+
+            window.startGame = function(entryFee) {
+                currentEntryFee = entryFee;
+                const matchmakingContainer = document.getElementById('matchmakingContainer');
+                const gameStartingContainer = document.getElementById('gameStartingContainer');
+                
+                if (matchmakingContainer) matchmakingContainer.style.display = 'none';
+                if (gameStartingContainer) gameStartingContainer.style.display = 'flex';
+                
+                const opponents = ['StarGirl', 'SupplyKing', 'ShadowBlade', 'NinjaMaster', 'Phoenix', 'Dragon'];
+                currentOpponent = opponents[Math.floor(Math.random() * opponents.length)];
+                const player2NameSpan = document.getElementById('player2Name');
+                if (player2NameSpan) player2NameSpan.innerText = currentOpponent;
+                
+                const avatarMap = {
+                    'StarGirl': '⭐', 'SupplyKing': '👑', 'ShadowBlade': '🗡️',
+                    'NinjaMaster': '🥷', 'Phoenix': '🔥', 'Dragon': '🐉'
+                };
+                const player2AvatarDiv = document.getElementById('player2Avatar');
+                if (player2AvatarDiv) player2AvatarDiv.innerHTML = avatarMap[currentOpponent] || '👤';
+                
+                let countdown = 3;
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    const countdownNumSpan = document.getElementById('countdownNum');
+                    if (countdownNumSpan) countdownNumSpan.innerText = countdown;
+                    if (countdown <= 0) {
+                        clearInterval(countdownInterval);
+                        if (gameStartingContainer) gameStartingContainer.style.display = 'none';
+                        window.startGameplay();
+                    }
+                }, 1000);
+            }
+
+            window.startGameplay = function() {
+                const gameplayContainer = document.getElementById('gameplayContainer');
+                if (gameplayContainer) gameplayContainer.style.display = 'flex';
+                playerScore = 0;
+                opponentScore = 0;
+                timeLeft = 30;
+                gameActive = true;
+                window.updateGameScores();
+                
+                gameInterval = setInterval(() => {
+                    if (!gameActive) return;
+                    
+                    timeLeft--;
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    const gameTimerSpan = document.getElementById('gameTimer');
+                    if (gameTimerSpan) gameTimerSpan.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    if (Math.random() < 0.3) {
+                        opponentScore += Math.floor(Math.random() * 10) + 5;
+                        window.updateGameScores();
+                    }
+                    
+                    if (timeLeft <= 0) {
+                        window.endGame();
+                    }
+                }, 1000);
+            }
+
+            window.handleTap = function() { 
+                if (!gameActive) return; 
+                playerScore += 10; 
+                window.updateGameScores();
+                
+                const tapBtn = document.getElementById('tapButton');
+                if (tapBtn) {
+                    tapBtn.style.transform = 'scale(0.96)';
+                    setTimeout(() => {
+                        tapBtn.style.transform = 'scale(1)';
+                    }, 100);
+                }
+            }
+            
+            window.updateGameScores = function() { 
+                const playerScoreSpan = document.getElementById('playerScore');
+                const opponentScoreSpan = document.getElementById('opponentScore');
+                if (playerScoreSpan) playerScoreSpan.innerText = playerScore; 
+                if (opponentScoreSpan) opponentScoreSpan.innerText = opponentScore; 
+            }
+
+            window.endGame = function() {
+                gameActive = false;
+                clearInterval(gameInterval);
+                const gameplayContainer = document.getElementById('gameplayContainer');
+                if (gameplayContainer) gameplayContainer.style.display = 'none';
+                
+                const isWin = playerScore > opponentScore;
+                const winAmount = isWin ? currentEntryFee * 2 : 0;
+                const platformFee = winAmount * (ENV.PLATFORM_FEE_PERCENTAGE / 100);
+                const netWin = winAmount - platformFee;
+                
+                const elements = {
+                    finalPlayerScore: document.getElementById('finalPlayerScore'),
+                    finalOpponentScore: document.getElementById('finalOpponentScore'),
+                    matchReward: document.getElementById('matchReward'),
+                    entryFeeDisplay: document.getElementById('entryFeeDisplay'),
+                    winAmount: document.getElementById('winAmount'),
+                    platformFee: document.getElementById('platformFee'),
+                    resultHeader: document.getElementById('resultHeader'),
+                    resultText: document.getElementById('resultText'),
+                    resultIcon: document.getElementById('resultIcon'),
+                    gameResultContainer: document.getElementById('gameResultContainer')
+                };
+                
+                if (elements.finalPlayerScore) elements.finalPlayerScore.innerText = playerScore;
+                if (elements.finalOpponentScore) elements.finalOpponentScore.innerText = opponentScore;
+                if (elements.matchReward) elements.matchReward.innerText = `₦${winAmount.toLocaleString()}`;
+                if (elements.entryFeeDisplay) elements.entryFeeDisplay.innerText = `₦${currentEntryFee.toLocaleString()}`;
+                if (elements.winAmount) elements.winAmount.innerHTML = isWin ? `₦${netWin.toLocaleString()}` : '₦0.00';
+                if (elements.platformFee) elements.platformFee.innerHTML = `₦${platformFee.toLocaleString()}`;
+                
+                if (isWin) {
+                    if (elements.resultText) elements.resultText.innerText = 'YOU WIN!';
+                    if (elements.resultIcon) elements.resultIcon.innerText = '🏆';
+                    if (elements.resultHeader) elements.resultHeader.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                    userData.wallet_balance += netWin;
+                    userData.total_winnings += netWin;
+                    userData.matches_played++;
+                    userData.matches_won++;
+                    userData.win_rate = Math.round((userData.matches_won / userData.matches_played) * 100);
+                    userData.total_xp += 50;
+                    
+                    userData.transactions.unshift({
+                        type: 'WIN',
+                        amount: netWin,
+                        description: `${currentGameMode?.toUpperCase() || '1v1'} Victory`,
+                        date: new Date().toISOString().split('T')[0]
+                    });
+                    
+                    updateUIWithUserData(userData);
+                } else {
+                    if (elements.resultText) elements.resultText.innerText = 'YOU LOSE!';
+                    if (elements.resultIcon) elements.resultIcon.innerText = '😢';
+                    if (elements.resultHeader) elements.resultHeader.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                    userData.matches_played++;
+                    userData.win_rate = Math.round((userData.matches_won / userData.matches_played) * 100);
+                    userData.total_xp += 10;
+                    updateUIWithUserData(userData);
+                }
+                
+                if (elements.gameResultContainer) elements.gameResultContainer.style.display = 'flex';
+            }
+
+            window.continueToLobby = function() { 
+                const gameResultContainer = document.getElementById('gameResultContainer');
+                if (gameResultContainer) gameResultContainer.style.display = 'none'; 
+                showHome(); 
+            }
+            
+            window.shareResult = function() { 
+                const resultText = document.getElementById('resultText');
+                const winAmountSpan = document.getElementById('winAmount');
+                const result = resultText ? resultText.innerText : 'played';
+                const winAmount = winAmountSpan ? winAmountSpan.innerText : '₦0.00';
+                const message = `I ${result} on Yume! ${winAmount !== '₦0.00' ? `Won ${winAmount}` : ''} Play Yume and win real cash!`;
+                
+                if (navigator.share) {
+                    navigator.share({ title: 'Yume Gaming', text: message });
+                } else {
+                    navigator.clipboard.writeText(message);
+                    alert('Result copied to clipboard! Share with your friends.');
+                }
+            }
+            
+            window.joinTournament = function(tournamentId) { 
+                let entryFee = 0;
+                let tournamentName = "";
+                switch(tournamentId) {
+                    case 'rookie': entryFee = 200; tournamentName = "Rookie Cup"; break;
+                    case 'pro': entryFee = 1000; tournamentName = "Pro League"; break;
+                    case 'supay': entryFee = 1500; tournamentName = "Supay Masters"; break;
+                }
+                
+                if (userData.wallet_balance >= entryFee) {
+                    if (confirm(`Join ${tournamentName} for ₦${entryFee.toLocaleString()}?`)) {
+                        currentGameMode = tournamentName;
+                        window.startMatchmaking(entryFee);
+                    }
+                } else {
+                    alert(`Insufficient balance! Need ₦${entryFee.toLocaleString()} to join ${tournamentName}.`);
+                }
+            }
+            
+            window.showCreateTournament = function() { 
+                alert('🏆 Create Custom Tournament\nSet your own prize pool, entry fee, and invite players! Features coming soon.'); 
+            }
+            
+            window.showDeposit = function() { 
+                let amount = prompt("Enter deposit amount (₦):", "1000");
+                if (amount && !isNaN(amount) && amount >= ENV.MIN_DEPOSIT) { 
+                    userData.wallet_balance += parseInt(amount);
+                    userData.transactions.unshift({
+                        type: 'DEPOSIT',
+                        amount: parseInt(amount),
+                        description: 'Bank Transfer',
+                        date: new Date().toISOString().split('T')[0]
+                    });
+                    updateUIWithUserData(userData); 
+                    loadTransactions();
+                    alert(`✅ ₦${amount} deposited successfully! New balance: ₦${userData.wallet_balance.toLocaleString()}`); 
+                } else if (amount && amount < ENV.MIN_DEPOSIT) {
+                    alert(`Minimum deposit amount is ₦${ENV.MIN_DEPOSIT}`);
+                }
+            }
+            
+            window.showWithdraw = function() { 
+                const withdrawModal = document.getElementById('withdrawModal');
+                if (withdrawModal) withdrawModal.style.display = 'flex'; 
+            }
+            
+            window.processWithdraw = function() { 
+                const amountInput = document.getElementById('withdrawAmount');
+                const methodSelect = document.getElementById('withdrawMethod');
+                const amount = amountInput ? amountInput.value : null;
+                const method = methodSelect ? methodSelect.value : 'bank';
+                
+                if (!amount || amount < ENV.MIN_WITHDRAWAL) {
+                    alert(`Minimum withdrawal amount is ₦${ENV.MIN_WITHDRAWAL}`);
+                    return;
+                }
+                
+                if (amount > userData.wallet_balance) {
+                    alert(`Insufficient balance! Your balance is ₦${userData.wallet_balance.toLocaleString()}`);
+                    return;
+                }
+                
+                userData.wallet_balance -= parseInt(amount);
                 userData.transactions.unshift({
-                    type: 'DEPOSIT',
-                    amount: parseInt(amount),
-                    description: 'Bank Transfer',
+                    type: 'WITHDRAWAL',
+                    amount: -parseInt(amount),
+                    description: method === 'bank' ? 'Bank Transfer' : method === 'palmpay' ? 'PalmPay' : 'Supay',
                     date: new Date().toISOString().split('T')[0]
                 });
-                updateUIWithUserData(userData); 
+                updateUIWithUserData(userData);
                 loadTransactions();
-                alert(`✅ ₦${amount} deposited successfully! New balance: ₦${userData.wallet_balance.toLocaleString()}`); 
-            } else if (amount && amount < ENV.MIN_DEPOSIT) {
-                alert(`Minimum deposit amount is ₦${ENV.MIN_DEPOSIT}`);
-            }
-        }
-        
-        function showWithdraw() { 
-            document.getElementById('withdrawModal').style.display = 'flex'; 
-        }
-        
-        function processWithdraw() { 
-            const amount = document.getElementById('withdrawAmount').value;
-            const method = document.getElementById('withdrawMethod').value;
-            
-            if (!amount || amount < ENV.MIN_WITHDRAWAL) {
-                alert(`Minimum withdrawal amount is ₦${ENV.MIN_WITHDRAWAL}`);
-                return;
+                
+                let methodName = "";
+                switch(method) {
+                    case 'bank': methodName = "Bank Transfer"; break;
+                    case 'palmpay': methodName = "PalmPay"; break;
+                    case 'supay': methodName = "Supay"; break;
+                }
+                
+                alert(`✅ Withdrawal of ₦${amount} via ${methodName} initiated!\nFunds will arrive within 1-2 business days.`);
+                window.closeModal('withdrawModal');
+                if (amountInput) amountInput.value = '';
             }
             
-            if (amount > userData.wallet_balance) {
-                alert(`Insufficient balance! Your balance is ₦${userData.wallet_balance.toLocaleString()}`);
-                return;
+            window.closeModal = function(id) { 
+                const modal = document.getElementById(id);
+                if (modal) modal.style.display = 'none'; 
             }
             
-            userData.wallet_balance -= parseInt(amount);
-            userData.transactions.unshift({
-                type: 'WITHDRAWAL',
-                amount: -parseInt(amount),
-                description: method === 'bank' ? 'Bank Transfer' : method === 'palmpay' ? 'PalmPay' : 'Supay',
-                date: new Date().toISOString().split('T')[0]
-            });
-            updateUIWithUserData(userData);
-            loadTransactions();
-            
-            let methodName = "";
-            switch(method) {
-                case 'bank': methodName = "Bank Transfer"; break;
-                case 'palmpay': methodName = "PalmPay"; break;
-                case 'supay': methodName = "Supay"; break;
+            window.copyReferralCode = function() { 
+                const code = `YUME${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+                navigator.clipboard.writeText(code);
+                alert(`✅ Referral code ${code} copied!\nShare with friends. You earn ₦${ENV.REFERRAL_BONUS.toLocaleString()} when they sign up and play!`); 
             }
             
-            alert(`✅ Withdrawal of ₦${amount} via ${methodName} initiated!\nFunds will arrive within 1-2 business days.`);
-            closeModal('withdrawModal');
-            document.getElementById('withdrawAmount').value = '';
-        }
-        
-        function closeModal(id) { 
-            document.getElementById(id).style.display = 'none'; 
-        }
-        
-        function copyReferralCode() { 
-            const code = `YUME${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-            navigator.clipboard.writeText(code);
-            alert(`✅ Referral code ${code} copied!\nShare with friends. You earn ₦${ENV.REFERRAL_BONUS.toLocaleString()} when they sign up and play!`); 
-        }
-        
-        function showCareerResults() { 
-            const wins = userData.matches_won || 0;
-            const losses = userData.matches_played - wins;
-            alert(`📊 Career Results\n\nMatches Played: ${userData.matches_played}\nWins: ${wins}\nLosses: ${losses}\nWin Rate: ${userData.win_rate}%\nTotal Winnings: ₦${userData.total_winnings.toLocaleString()}`);
-        }
-        
-        function showAchievements() { 
-            alert(`🏅 Achievements\n\n⭐ Level ${userData.level} Player\n💰 Won ₦${userData.total_winnings.toLocaleString()}\n🎯 ${userData.win_rate}% Win Rate\n🎮 ${userData.matches_played} Matches Played\n\nKeep playing to unlock more!`); 
-        }
-        
-        function showSettings() { 
-            alert(`⚙️ Settings\n\n• Notifications: On\n• Sound Effects: On\n• Vibration: On\n• Privacy Mode: Off\n\nMore settings coming soon!`); 
-        }
-        
-        function showSupport() { 
-            alert(`❓ Support\n\nEmail: ${ENV.SUPPORT_EMAIL}\nPhone: ${ENV.SUPPORT_PHONE}\nTelegram: @YumeSupport\n\n24/7 Customer Support Available`); 
-        }
-        
-        function logout() { 
-            if (supabase && ENV.SUPABASE_URL !== 'https://your-project.supabase.co') {
-                supabase.auth.signOut();
+            window.showCareerResults = function() { 
+                const wins = userData.matches_won || 0;
+                const losses = userData.matches_played - wins;
+                alert(`📊 Career Results\n\nMatches Played: ${userData.matches_played}\nWins: ${wins}\nLosses: ${losses}\nWin Rate: ${userData.win_rate}%\nTotal Winnings: ₦${userData.total_winnings.toLocaleString()}`);
             }
-            currentUser = null; 
-            showSplash(); 
-        }
+            
+            window.showAchievements = function() { 
+                alert(`🏅 Achievements\n\n⭐ Level ${userData.level} Player\n💰 Won ₦${userData.total_winnings.toLocaleString()}\n🎯 ${userData.win_rate}% Win Rate\n🎮 ${userData.matches_played} Matches Played\n\nKeep playing to unlock more!`); 
+            }
+            
+            window.showSettings = function() { 
+                alert(`⚙️ Settings\n\n• Notifications: On\n• Sound Effects: On\n• Vibration: On\n• Privacy Mode: Off\n\nMore settings coming soon!`); 
+            }
+            
+            window.showSupport = function() { 
+                alert(`❓ Support\n\nEmail: ${ENV.SUPPORT_EMAIL}\nPhone: ${ENV.SUPPORT_PHONE}\nTelegram: @YumeSupport\n\n24/7 Customer Support Available`); 
+            }
+            
+            window.logout = function() { 
+                if (supabase && ENV.SUPABASE_URL !== 'https://your-project.supabase.co') {
+                    supabase.auth.signOut();
+                }
+                currentUser = null; 
+                showSplash(); 
+            }
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', initSupabase);
+            // Make functions globally available
+            window.goToSlide = goToSlide;
+            window.skipOnboarding = skipOnboarding;
+            window.nextOnboarding = nextOnboarding;
+            window.switchAuthMode = switchAuthMode;
+            window.showHome = showHome;
+
+            // Initialize app
+            document.addEventListener('DOMContentLoaded', initSupabase);
+        }
     </script>
 </body>
 </html>
